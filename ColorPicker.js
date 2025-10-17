@@ -53,7 +53,8 @@ class RGBValidator extends Validator {
     const m = this.input.value.match(this.regex)
     if (m === null) return null
 
-    const c = new Color(`rgb(${m[0]})`)
+    // const c = new Color(`rgb(${m[0]})`)
+    const c = Color.FromRGBString(`rgb(${m[0]})`)
 
     const r = Math.floor(c.r * 255)
     const g = Math.floor(c.g * 255)
@@ -85,7 +86,8 @@ class HSVValidator extends Validator {
     const m = this.input.value.match(this.regex)
     if (m === null) return null
 
-    const c = new Color(`hsv(${m[0]})`)
+    // const c = new Color(`hsv(${m[0]})`)
+    const c = Color.FromHSVString(`hsv(${m[0]})`)
     const [h, s, v] = RGBToHSV(c.r, c.g, c.b)
     this.lastValid = `${h}°, ${Math.floor(s * 100)}%, ${Math.floor(v * 100)}%`
 
@@ -114,7 +116,7 @@ class HSLValidator extends Validator {
     const m = this.input.value.match(this.regex)
     if (m === null) return null
 
-    const c = new Color(`hsl(${m[0]})`)
+    const c = Color.FromHSLString(`hsl(${m[0]})`)
     const [h, s, l] = RGBToHSL(c.r, c.g, c.b)
     this.lastValid = `${h}°, ${Math.floor(s * 100)}%, ${Math.floor(l * 100)}%`
 
@@ -143,7 +145,7 @@ class CMYKValidator extends Validator {
     const m = this.input.value.match(this.regex)
     if (m === null) return null
 
-    const c = new Color(`cmyk(${m[0]})`)
+    const c = Color.FromCMYKString(`cmyk(${m[0]})`)
     const [cyan, magenta, yellow, black] = RGBToCMYK(c.r, c.g, c.b)
     this.lastValid = `${Math.floor(cyan * 100)}%, ${Math.floor(magenta * 100)}%, ${Math.floor(yellow * 100)}%, ${Math.floor(black * 100)}%`
 
@@ -172,7 +174,7 @@ class HexValidator extends Validator {
     const m = this.input.value.match(this.regex)
     if (m === null) return null
 
-    const c = new Color(m[0])
+    const c = Color.FromHexString(m[0])
     this.lastValid = RGBToHexString(c.r, c.g, c.b)
 
     return c
@@ -493,7 +495,8 @@ class ColorPicker extends EventTarget {
    * @param {'HEX' | 'RGB' | 'CMYK' | 'HSV' | 'HSL' | ''} [exclude=''] 
    */
   updateConversionFields(exclude = '') {
-    const c = new Color(this.getCurrentColor())
+    // const c = new Color(this.getCurrentColor())
+    const c = Color.FromRGBString(this.getCurrentColor())
 
     if (exclude !== 'HEX') {
       this.fieldHex.value = c.toHexString()
@@ -564,7 +567,9 @@ class ColorPicker extends EventTarget {
    * @param {number} value 0 <= value <= 1
    */
   setSV(saturation, value) {
-    const c = new Color().fromHSV(this.hue, saturation, value)
+    const c = new Color()
+    c.hsv = [this.hue, saturation, value]
+    // const c = new Color().fromHSV(this.hue, saturation, value)
     const str = c.toHSLString()
     this.paletteDropper.style.backgroundColor = str
     this.colorDisplay.style.backgroundColor = str
@@ -625,7 +630,8 @@ class ColorPicker extends EventTarget {
    * @returns {ColorPicker}
    */
   initialize(initialColor = 'rgb(204, 40, 40)') {
-    const c = new Color(initialColor)
+    const c = Color.FromRGBString(initialColor)
+    // const c = new Color(initialColor)
     this.setColor(c)
     return this
   }
