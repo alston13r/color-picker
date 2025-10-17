@@ -88,7 +88,8 @@ class HSVValidator extends Validator {
 
     // const c = new Color(`hsv(${m[0]})`)
     const c = Color.FromHSVString(`hsv(${m[0]})`)
-    const [h, s, v] = RGBToHSV(c.r, c.g, c.b)
+    // const [h, s, v] = RGBToHSV(c.r, c.g, c.b)
+    const [h, s, v] = c.hsv
     this.lastValid = `${h}°, ${Math.floor(s * 100)}%, ${Math.floor(v * 100)}%`
 
     return c
@@ -117,7 +118,8 @@ class HSLValidator extends Validator {
     if (m === null) return null
 
     const c = Color.FromHSLString(`hsl(${m[0]})`)
-    const [h, s, l] = RGBToHSL(c.r, c.g, c.b)
+    // const [h, s, l] = RGBToHSL(c.r, c.g, c.b)
+    const [h, s, l] = c.hsl
     this.lastValid = `${h}°, ${Math.floor(s * 100)}%, ${Math.floor(l * 100)}%`
 
     return c
@@ -146,7 +148,8 @@ class CMYKValidator extends Validator {
     if (m === null) return null
 
     const c = Color.FromCMYKString(`cmyk(${m[0]})`)
-    const [cyan, magenta, yellow, black] = RGBToCMYK(c.r, c.g, c.b)
+    // const [cyan, magenta, yellow, black] = RGBToCMYK(c.r, c.g, c.b)
+    const [cyan, magenta, yellow, black] = c.cmyk
     this.lastValid = `${Math.floor(cyan * 100)}%, ${Math.floor(magenta * 100)}%, ${Math.floor(yellow * 100)}%, ${Math.floor(black * 100)}%`
 
     return c
@@ -175,7 +178,8 @@ class HexValidator extends Validator {
     if (m === null) return null
 
     const c = Color.FromHexString(m[0])
-    this.lastValid = RGBToHexString(c.r, c.g, c.b)
+    // this.lastValid = RGBToHexString(c.r, c.g, c.b)
+    this.lastValid = c.toHexString()
 
     return c
   }
@@ -615,7 +619,8 @@ class ColorPicker extends EventTarget {
       this.fieldHSLValidator.lastValid = str.substring(start, end)
     }
 
-    const [h, s, v] = RGBToHSV(c.r, c.g, c.b)
+    // const [h, s, v] = RGBToHSV(c.r, c.g, c.b)
+    const [h, s, v] = c.hsv
 
     this.setHue(h, false)
     this.setSV(s, v)
