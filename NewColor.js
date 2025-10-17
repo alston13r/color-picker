@@ -195,7 +195,7 @@ class Color {
     if (typeof name !== 'string') return new Color(0, 0, 0)
     const formattedName = name.trim().split(/\s+/).join('').toLowerCase()
     if (!(formattedName in Color._NamedColors)) return new Color(0, 0, 0)
-    return Color.FromHEXString(Color._NamedColors[formattedName])
+    return Color.FromHexString(Color._NamedColors[formattedName])
   }
 
   /**
@@ -386,7 +386,7 @@ class Color {
    * @param {number[]} [arr=[]] output array
    * @returns {[number, number, number]} [0 <= red <= 1, 0 <= green <= 1, 0 <= blue <= 1]
    */
-  static _HSLToRGB(h = 0, s = 0, l = 0, arr = []) {
+  static _HSLtoRGB(h = 0, s = 0, l = 0, arr = []) {
     h %= 360
 
     const C = (1 - Math.abs(2 * l - 1)) * s
@@ -435,7 +435,7 @@ class Color {
    * @param {number[]} [arr=[]] output array
    * @returns {[number, number, number]} [0 <= hue < 360, 0 <= saturation <= 1, 0 <= light <= 1]
    */
-  static _RGBToHSL(r = 0, g = 0, b = 0, arr = []) {
+  static _RGBtoHSL(r = 0, g = 0, b = 0, arr = []) {
     const max = Math.max(r, g, b)
     const min = Math.min(r, g, b)
     const delta = max - min
@@ -484,7 +484,7 @@ class Color {
    * @param {number[]} [arr=[]] output array
    * @returns {[number, number, number]} [0 <= red <= 1, 0 <= green <= 1, 0 <= blue <= 1]
    */
-  static _CMYKToRGB(c = 0, m = 0, y = 0, k = 0, arr = []) {
+  static _CMYKtoRGB(c = 0, m = 0, y = 0, k = 0, arr = []) {
     arr[0] = (1 - c) * (1 - k)
     arr[1] = (1 - m) * (1 - k)
     arr[2] = (1 - y) * (1 - k)
@@ -510,7 +510,7 @@ class Color {
    * @param {number[]} [arr=[]] output array
    * @returns {[number, number, number, number]} [0 <= cyan <= 1, 0 <= magenta <= 1, 0 <= yellow <= 1, 0 <= black <= 1]
    */
-  static _RGBToCMYK(r = 0, g = 0, b = 0, arr = []) {
+  static _RGBtoCMYK(r = 0, g = 0, b = 0, arr = []) {
     const max = Math.max(r, g, b)
 
     arr[0] = max - r
@@ -570,7 +570,7 @@ class Color {
    * 
    * @returns {string} #RRGGBB
    */
-  toHEXString() {
+  toHexString() {
     /**
      * @param {string} str 
      * @returns {string}
@@ -594,7 +594,7 @@ class Color {
    * @param {string} str #RRGGBB, RRGGBB, #RGB, or RGB
    * @returns {Color} the color, black if not a valid string
    */
-  static FromHEXString(str) {
+  static FromHexString(str) {
     if (typeof str !== 'string') return new Color(0, 0, 0)
 
     let r = 0, g = 0, b = 0
