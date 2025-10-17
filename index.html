@@ -160,6 +160,10 @@
       grid-template-columns: repeat(12, 1fr);
     }
 
+    .color-picker.grid.gap {
+      gap: 15px;
+    }
+
     .color-picker.g-col-3 {
       grid-column: auto / span 3;
     }
@@ -210,8 +214,6 @@
 
     .color-picker.container {
       width: fit-content;
-      gap: 15px;
-      padding: 10px;
 
       background-color: #ccc;
       border: 1px solid black;
@@ -219,6 +221,7 @@
     }
 
     .color-picker.paletteSample {
+      border-top-left-radius: 8px;
       width: 30%;
       aspect-ratio: 1 / 1;
       background-color: red;
@@ -233,6 +236,7 @@
     .color-picker.paletteBackground,
     .color-picker.paletteSaturation,
     .color-picker.paletteValue {
+      border-top-right-radius: 8px;
       position: absolute;
       width: 100%;
       height: 100%;
@@ -304,11 +308,14 @@
 
 
 
-  <div class='color-picker grid container'>
+  <div class='color-picker container'>
 
-    <div class='color-picker g-col-12'>
+    <div class='color-picker flex-col center'>
 
-      <div class='color-picker flex-row'>
+
+      <!-- <div class='color-picker g-col-12'> -->
+
+      <div class='color-picker flex-row' style='width: 100%;'>
 
         <div class='color-picker paletteSample'></div>
 
@@ -323,66 +330,59 @@
 
       </div>
 
+      <!-- </div> -->
+
+      <div class='color-picker grid gap' style='margin: 20px; box-sizing: border-box;'>
 
 
-
-
-    </div>
-
-    <div class='color-picker g-col-12'>
-
-      <div class='color-picker flex-row center'>
-        <div class='color-picker hueSlider'>
-          <div class='color-picker dropper'></div>
+        <div class='color-picker g-col-12'>
+          <div class='color-picker flex-row center'>
+            <div class='color-picker hueSlider'>
+              <div class='color-picker dropper'></div>
+            </div>
+          </div>
         </div>
+
+        <div class='color-picker g-col-12'>
+          <fieldset class='color-picker textInput center'>
+            <legend>Hex</legend>
+            <input type='text'>
+          </fieldset>
+        </div>
+
+        <div class='color-picker g-col-3'>
+          <fieldset class='color-picker textInput'>
+            <legend>RGB</legend>
+            <input type='text'>
+          </fieldset>
+        </div>
+
+        <div class='color-picker g-col-3'>
+          <fieldset class='color-picker textInput'>
+            <legend>CMYK</legend>
+            <input type='text'>
+          </fieldset>
+        </div>
+
+        <div class='color-picker g-col-3'>
+          <fieldset class='color-picker textInput'>
+            <legend>HSV</legend>
+            <input type='text'>
+          </fieldset>
+        </div>
+
+        <div class='color-picker g-col-3'>
+          <fieldset class='color-picker textInput'>
+            <legend>HSL</legend>
+            <input type='text'>
+          </fieldset>
+        </div>
+
+
       </div>
 
     </div>
 
-    <div class='color-picker g-col-12'>
-
-      <fieldset class='color-picker textInput center'>
-        <legend>Hex</legend>
-        <input type='text'>
-      </fieldset>
-
-    </div>
-
-    <div class='color-picker g-col-3'>
-
-      <fieldset class='color-picker textInput'>
-        <legend>RGB</legend>
-        <input type='text'>
-      </fieldset>
-
-    </div>
-
-    <div class='color-picker g-col-3'>
-
-      <fieldset class='color-picker textInput'>
-        <legend>CMYK</legend>
-        <input type='text'>
-      </fieldset>
-
-    </div>
-
-    <div class='color-picker g-col-3'>
-
-      <fieldset class='color-picker textInput'>
-        <legend>HSV</legend>
-        <input type='text'>
-      </fieldset>
-
-    </div>
-
-    <div class='color-picker g-col-3'>
-
-      <fieldset class='color-picker textInput'>
-        <legend>HSL</legend>
-        <input type='text'>
-      </fieldset>
-
-    </div>
 
   </div>
 
