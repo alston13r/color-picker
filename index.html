@@ -5,7 +5,7 @@
 
   <!-- <script src='./Color.js'></script> -->
   <script src='./NewColor.js'></script>
-  <script src='./ColorPicker.js'></script>
+  <script src='./NewColorPicker.js'></script>
   <!-- <link rel='stylesheet' href='./color-picker.css'> -->
   <style>
     .vertical {
@@ -138,167 +138,7 @@
     }
   </style>
 
-  <style>
-    .color-picker.flex-row {
-      display: flex;
-      flex-direction: row;
-    }
-
-    .color-picker.flex-col {
-      display: flex;
-      flex-direction: column;
-    }
-
-    .color-picker.flex-row.center,
-    .color-picker.flex-col.center {
-      align-items: center;
-      justify-content: center;
-    }
-
-    .color-picker.grid {
-      display: grid;
-      grid-template-columns: repeat(12, 1fr);
-    }
-
-    .color-picker.grid.gap {
-      gap: 15px;
-    }
-
-    .color-picker.g-col-3 {
-      grid-column: auto / span 3;
-    }
-
-    .color-picker.g-col-12 {
-      grid-column: auto / span 12;
-    }
-
-
-
-
-
-    .color-picker.textInput {
-      margin: 0;
-      color: black;
-      border: 1px solid black;
-      border-radius: 5px;
-      padding-top: 2px;
-      padding-bottom: 9px;
-      font-size: 13px;
-    }
-
-    .color-picker.textInput legend {
-      padding: 0 8px;
-      font-size: inherit;
-      user-select: none;
-    }
-
-    .color-picker.textInput input[type=text] {
-      margin: 0;
-      font-size: inherit;
-      color: black;
-      caret-color: black;
-      background-color: inherit;
-      border: none;
-      text-align: left;
-      width: 100%;
-    }
-
-    .color-picker.textInput input[type=text]:focus {
-      outline: none;
-    }
-
-    .color-picker.textInput.center legend,
-    .color-picker.textInput.center input[type=text] {
-      text-align: center;
-    }
-
-    .color-picker.container {
-      width: fit-content;
-
-      background-color: #ccc;
-      border: 1px solid black;
-      border-radius: 8px;
-    }
-
-    .color-picker.paletteSample {
-      border-top-left-radius: 8px;
-      width: 30%;
-      aspect-ratio: 1 / 1;
-      background-color: red;
-    }
-
-    .color-picker.paletteContainer {
-      width: 70%;
-      position: relative;
-      --hue: 0;
-    }
-
-    .color-picker.paletteBackground,
-    .color-picker.paletteSaturation,
-    .color-picker.paletteValue {
-      border-top-right-radius: 8px;
-      position: absolute;
-      width: 100%;
-      height: 100%;
-      user-select: none;
-    }
-
-    .color-picker.paletteBackground {
-      background-color: hsl(var(--hue), 100%, 50%);
-    }
-
-    .color-picker.paletteSaturation {
-      background: linear-gradient(to right, rgb(255, 255, 255), rgba(0, 0, 0, 0));
-    }
-
-    .color-picker.paletteValue {
-      background: linear-gradient(to top, rgb(0, 0, 0), rgba(0, 0, 0, 0));
-    }
-
-    .color-picker.dropper {
-      width: 20px;
-      height: 20px;
-      border: 2px solid white;
-      border-radius: 50%;
-      position: absolute;
-      user-select: none;
-      cursor: pointer;
-    }
-
-    .color-picker.hueSlider {
-      --height: 10px;
-      background: linear-gradient(to right, rgb(255, 0, 0),
-          rgb(255, 255, 0),
-          rgb(0, 255, 0),
-          rgb(0, 255, 255),
-          rgb(0, 0, 255),
-          rgb(255, 0, 255),
-          rgb(255, 0, 0));
-      width: 90%;
-      height: var(--height);
-      border-radius: calc(var(--height)/2);
-      position: relative;
-      margin-top: calc(var(--height) * 0.8);
-      margin-bottom: calc(var(--height) * 0.8);
-    }
-
-    @media (prefers-color-scheme: dark) {
-      .color-picker.textInput {
-        color: white;
-        border: 1px solid rgb(95, 95, 95);
-      }
-
-      .color-picker.textInput input[type=text] {
-        color: white;
-        caret-color: white;
-      }
-
-      .color-picker.container {
-        background-color: #1f1f1f;
-        border: 1px solid rgb(95, 95, 95);
-      }
-    }
-  </style>
+  <link rel='stylesheet' href='./new-color-picker.css'>
 
 </head>
 
@@ -308,81 +148,64 @@
 
 
 
-  <div class='color-picker container'>
+  <div class='color-picker container flex-col center'>
 
-    <div class='color-picker flex-col center'>
-
-
-      <!-- <div class='color-picker g-col-12'> -->
-
-      <div class='color-picker flex-row' style='width: 100%;'>
-
-        <div class='color-picker paletteSample'></div>
-
-        <div class='color-picker paletteContainer'>
-
-          <div class='color-picker paletteBackground'></div>
-          <div class='color-picker paletteSaturation'></div>
-          <div class='color-picker paletteValue'></div>
-          <div class='color-picker dropper'></div>
-
-        </div>
-
+    <div class='color-picker flex-row' style='width: 100%;'>
+      <div class='color-picker paletteSample'></div>
+      <div class='color-picker paletteContainer'>
+        <div class='color-picker paletteBackground'></div>
+        <div class='color-picker paletteSaturation'></div>
+        <div class='color-picker paletteValue'></div>
+        <div class='color-picker dropper'></div>
       </div>
+    </div>
 
-      <!-- </div> -->
+    <div class='color-picker grid gap' style='margin: 20px; box-sizing: border-box;'>
 
-      <div class='color-picker grid gap' style='margin: 20px; box-sizing: border-box;'>
-
-
-        <div class='color-picker g-col-12'>
-          <div class='color-picker flex-row center'>
-            <div class='color-picker hueSlider'>
-              <div class='color-picker dropper'></div>
-            </div>
+      <div class='color-picker g-col-12'>
+        <div class='color-picker flex-row center'>
+          <div class='color-picker hueSlider'>
+            <div class='color-picker dropper'></div>
           </div>
         </div>
+      </div>
 
-        <div class='color-picker g-col-12'>
-          <fieldset class='color-picker textInput center'>
-            <legend>Hex</legend>
-            <input type='text'>
-          </fieldset>
-        </div>
+      <div class='color-picker g-col-12'>
+        <fieldset class='color-picker textInput center'>
+          <legend>Hex</legend>
+          <input type='text'>
+        </fieldset>
+      </div>
 
-        <div class='color-picker g-col-3'>
-          <fieldset class='color-picker textInput'>
-            <legend>RGB</legend>
-            <input type='text'>
-          </fieldset>
-        </div>
+      <div class='color-picker g-col-3'>
+        <fieldset class='color-picker textInput'>
+          <legend>RGB</legend>
+          <input type='text'>
+        </fieldset>
+      </div>
 
-        <div class='color-picker g-col-3'>
-          <fieldset class='color-picker textInput'>
-            <legend>CMYK</legend>
-            <input type='text'>
-          </fieldset>
-        </div>
+      <div class='color-picker g-col-3'>
+        <fieldset class='color-picker textInput'>
+          <legend>CMYK</legend>
+          <input type='text'>
+        </fieldset>
+      </div>
 
-        <div class='color-picker g-col-3'>
-          <fieldset class='color-picker textInput'>
-            <legend>HSV</legend>
-            <input type='text'>
-          </fieldset>
-        </div>
+      <div class='color-picker g-col-3'>
+        <fieldset class='color-picker textInput'>
+          <legend>HSV</legend>
+          <input type='text'>
+        </fieldset>
+      </div>
 
-        <div class='color-picker g-col-3'>
-          <fieldset class='color-picker textInput'>
-            <legend>HSL</legend>
-            <input type='text'>
-          </fieldset>
-        </div>
-
-
+      <div class='color-picker g-col-3'>
+        <fieldset class='color-picker textInput'>
+          <legend>HSL</legend>
+          <input type='text'>
+        </fieldset>
       </div>
 
     </div>
-
 
   </div>
 
