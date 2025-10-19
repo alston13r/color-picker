@@ -841,7 +841,7 @@ class Color {
     if (typeof str !== 'string') return null
 
     let m
-    if (m = str.match(/\s*cmyk\s*\(\s*(\d+)%?\s*,\s*(\d+)%?\s*,\s*(\d+)%?\s*,\s*(\d+)%?\s*\)\s*$/)) {
+    if (m = str.match(/\s*(?:cmyk)?\s*\(?\s*(\d+)%?\s*,\s*(\d+)%?\s*,\s*(\d+)%?\s*,\s*(\d+)%?\s*\)?\s*$/)) {
       const cyan = parseInt(m[1]) / 100
       const magenta = parseInt(m[2]) / 100
       const yellow = parseInt(m[3]) / 100
