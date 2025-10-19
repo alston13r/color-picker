@@ -76,105 +76,55 @@ class ColorPicker {
       bottomContainer.appendChild(outer)
     }
 
-    const hexInput = document.createElement('input')
-    hexInput.type = 'text'
+    /**
+     * Builds an input element, specifying the legend text, if it is wide,
+     * and whether or not to center to the legend text.
+     * 
+     * @param {string} legendText the legend text, displayed above the input
+     * @param {boolean} [wide=false] if the input should be wide
+     * @param {center} [center=false] if the legend text should be centered
+     */
+    function buildInput(legendText, wide = false, center = false) {
+      const input = document.createElement('input')
+      input.classList.add('color-picker')
+      if (wide) input.classList.add('wide')
+      input.type = 'text'
+      input.id = crypto.randomUUID()
 
-    {
       const legend = document.createElement('legend')
-      legend.innerText = 'Hex'
-
-      const fieldset = document.createElement('fieldset')
-      fieldset.classList.add('color-picker', 'textInput', 'center')
-      fieldset.append(legend, hexInput)
-
-      const outer = document.createElement('div')
-      outer.classList.add('color-picker', 'g-col-12')
-      outer.appendChild(fieldset)
-
-      bottomContainer.appendChild(outer)
-    }
-
-    const rgbInput = document.createElement('input')
-    rgbInput.type = 'text'
-
-    {
-      const legend = document.createElement('legend')
-      legend.innerText = 'RGB'
+      legend.innerText = legendText
 
       const fieldset = document.createElement('fieldset')
       fieldset.classList.add('color-picker', 'textInput')
-      fieldset.append(legend, rgbInput)
+      if (center) fieldset.classList.add('center')
+      fieldset.append(legend, input)
 
       const outer = document.createElement('div')
-      outer.classList.add('color-picker', 'g-col-3')
+      outer.classList.add('color-picker', wide ? 'g-col-12' : 'g-col-3')
       outer.appendChild(fieldset)
 
       bottomContainer.appendChild(outer)
+
+      return input
     }
 
-    const cmykInput = document.createElement('input')
-    cmykInput.type = 'text'
-
-    {
-      const legend = document.createElement('legend')
-      legend.innerText = 'CMYK'
-
-      const fieldset = document.createElement('fieldset')
-      fieldset.classList.add('color-picker', 'textInput')
-      fieldset.append(legend, cmykInput)
-
-      const outer = document.createElement('div')
-      outer.classList.add('color-picker', 'g-col-3')
-      outer.appendChild(fieldset)
-
-      bottomContainer.appendChild(outer)
-    }
-
-    const hsvInput = document.createElement('input')
-    hsvInput.type = 'text'
-
-    {
-      const legend = document.createElement('legend')
-      legend.innerText = 'HSV'
-
-      const fieldset = document.createElement('fieldset')
-      fieldset.classList.add('color-picker', 'textInput')
-      fieldset.append(legend, hsvInput)
-
-      const outer = document.createElement('div')
-      outer.classList.add('color-picker', 'g-col-3')
-      outer.appendChild(fieldset)
-
-      bottomContainer.appendChild(outer)
-    }
-
-    const hslInput = document.createElement('input')
-    hslInput.type = 'text'
-
-    {
-      const legend = document.createElement('legend')
-      legend.innerText = 'HSL'
-
-      const fieldset = document.createElement('fieldset')
-      fieldset.classList.add('color-picker', 'textInput')
-      fieldset.append(legend, hslInput)
-
-      const outer = document.createElement('div')
-      outer.classList.add('color-picker', 'g-col-3')
-      outer.appendChild(fieldset)
-
-      bottomContainer.appendChild(outer)
-    }
+    const hexInput = buildInput('Hex', true, true)
+    const rgbInput = buildInput('RGB')
+    const cmykInput = buildInput('CMYK')
+    const hsvInput = buildInput('HSV')
+    const hslInput = buildInput('HSL')
 
     container.append(topContainer, bottomContainer)
     targetElement.appendChild(container)
 
-    this.droppers = { paletteDropper, hueDropper }
     this.inputs = { hexInput, rgbInput, cmykInput, hsvInput, hslInput }
+    this.droppers = { paletteDropper, hueDropper }
     this.palette = {
       sample: paletteSampleDiv,
       background: paletteContainerBackground
     }
+
+
 
 
 
@@ -202,6 +152,43 @@ class ColorPicker {
       const str = this._color.toRGBString()
       paletteDropper.style.backgroundColor = str
       paletteSampleDiv.style.backgroundColor = str
+
+      // initial formats
+      {
+        // hex
+        const str = this._color.toHexString()
+        const formatted = str
+        console.log(str, '"' + formatted + '"')
+        hexInput.value = formatted
+      }
+      {
+        // rgb
+        const str = this._color.toRGBString()
+        const formatted = str.substring(str.indexOf('(') + 1, str.indexOf(')'))
+        console.log(str, '"' + formatted + '"')
+        rgbInput.value = formatted
+      }
+      {
+        // cmyk
+        const str = this._color.toCMYKString()
+        const formatted = str.substring(str.indexOf('(') + 1, str.indexOf(')'))
+        console.log(str, '"' + formatted + '"')
+        cmykInput.value = formatted
+      }
+      {
+        // hsv
+        const str = this._color.toHSVString()
+        const formatted = str.substring(str.indexOf('(') + 1, str.indexOf(')'))
+        console.log(str, '"' + formatted + '"')
+        hsvInput.value = formatted
+      }
+      {
+        // hsl
+        const str = this._color.toHSLString()
+        const formatted = str.substring(str.indexOf('(') + 1, str.indexOf(')'))
+        console.log(str, '"' + formatted + '"')
+        hslInput.value = formatted
+      }
     }
 
 

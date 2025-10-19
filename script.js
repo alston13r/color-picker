@@ -6,4 +6,6 @@
 // const picker = new ColorPicker()
 // picker.appendTo(aligner)
 
-const picker = new ColorPicker(document.body, console.log)
+// [ ] convert to EventTarget
+
+const picker = new ColorPicker(document.body)
