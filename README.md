@@ -12,7 +12,7 @@ Download the source files and add the style and scripts to your page:
 <script src='./ColorPicker.js'></script>
 ```
 ### Usage
-The `ColorPicker` is constructed with a target element as the parameter. This can be an `HTMLElement` or a query selector string.
+The `ColorPicker` is constructed with a target element as the parameter. This can be an `HTMLElement` or a query selector.
 
 ```javascript
 // HTMLElement as target
