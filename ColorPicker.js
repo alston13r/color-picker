@@ -1,6 +1,3 @@
-// should have event for color change
-
-
 class ColorPicker extends EventTarget {
   /**
    * Clamps the value x between min and max, inclusive for both.
@@ -24,9 +21,21 @@ class ColorPicker extends EventTarget {
   _value = this._color.hsv[2]
 
   /**
-   * @param {HTMLElement} targetElement 
+   * Constructs a ColorPicker, attaching to the specified target element. Target is either
+   * an HTMLElement or a query selector.
+   * 
+   * @param {HTMLElement | string} targetElement 
    */
   constructor(targetElement) {
+    if (typeof targetElement === 'string') {
+      targetElement = document.body.querySelector(targetElement)
+      if (targetElement === null) throw Error(`Could not find element: ${targetElement}`)
+    }
+
+    if (!(targetElement instanceof HTMLElement)) {
+      throw Error('Must specify a target element when constructing a ColorPicker')
+    }
+
     super()
 
     const container = document.createElement('div')
