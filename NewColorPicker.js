@@ -132,6 +132,27 @@ class ColorPicker {
       slider: hueDiv
     }
 
+    /**
+     * Updates the text fields to match the current color, excluding a field if specified.
+     * 
+     * @param {'hex' | 'rgb' | 'cmyk' | 'hsv' | 'hsl'} exclude the field to exclude
+     */
+    const updateFields = (exclude = '') => {
+      if (exclude.length === 0) {
+        this._updateHexInput()
+        this._updateRGBInput()
+        this._updateCMYKInput()
+        this._updateHSVInput()
+        this._updateHSLInput()
+      } else {
+        if (exclude !== 'hex') this._updateHexInput()
+        if (exclude !== 'rgb') this._updateRGBInput()
+        if (exclude !== 'cmyk') this._updateCMYKInput()
+        if (exclude !== 'hsv') this._updateHSVInput()
+        if (exclude !== 'hsl') this._updateHSLInput()
+      }
+    }
+
     // show initial color
     {
       // initial placement of droppers
@@ -143,11 +164,12 @@ class ColorPicker {
       this._updateHueSlider()
 
       // initial formats
-      this._updateHexInput()
-      this._updateRGBInput()
-      this._updateCMYKInput()
-      this._updateHSVInput()
-      this._updateHSLInput()
+      updateFields()
+      // this._updateHexInput()
+      // this._updateRGBInput()
+      // this._updateCMYKInput()
+      // this._updateHSVInput()
+      // this._updateHSLInput()
     }
 
 
@@ -224,7 +246,7 @@ class ColorPicker {
 
         callback(color)
 
-        // update text fields
+        updateFields()
       }
 
       paletteContainer.addEventListener('mousedown', e => {
@@ -289,7 +311,7 @@ class ColorPicker {
         updateDropper()
         callback(color)
 
-        // update text fields
+        updateFields()
       }
 
       hueDropper.addEventListener('mousedown', e => {
