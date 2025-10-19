@@ -29,3 +29,13 @@ colorPicker.addEventListener('colorchange', e => {
   console.log(e.detail.color)
 })
 ```
+
+`ColorPicker` has methods for getting and setting the current color.
+
+```javascript
+// set color to `coral` #ff7f50
+colorPicker.setColor(Color.FromNamed('coral'))
+
+// currentColor is a copy of `coral` #ff7f50
+const currentColor = colorPicker.getColor()
+```

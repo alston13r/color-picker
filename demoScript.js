@@ -1,5 +1,5 @@
-const picker = new ColorPicker('#target')
+const colorPicker = new ColorPicker('#target')
 
-picker.addEventListener('colorchange', e => {
+colorPicker.addEventListener('colorchange', e => {
   console.log(e.detail.color)
 })
