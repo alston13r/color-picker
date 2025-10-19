@@ -1,43 +1,15 @@
-<html>
+<!DOCTYPE html>
+<html lang='en-US'>
 
 <head>
+
   <meta charset='UTF-8'>
 
-  <!-- <script src='./Color.js'></script> -->
-  <script src='./NewColor.js'></script>
-  <script src='./NewColorPicker.js'></script>
-  <!-- <link rel='stylesheet' href='./color-picker.css'> -->
-  <style>
-    .vertical {
-      display: flex;
-      flex-direction: column;
-    }
-
-    .horizontal {
-      display: flex;
-      flex-direction: row;
-    }
-
-    .vertical.center,
-    .horizontal.center {
-      align-items: center;
-      justify-content: center;
-    }
-
-    .vertical.spread,
-    .horizontal.spread {
-      align-items: center;
-      justify-content: space-between;
-    }
-  </style>
+  <link rel='stylesheet' href='./color-picker.css'>
 
   <style>
     body {
-      background-color: white;
-      font-family: Arial, Helvetica, sans-serif;
-      font-size: 150%;
-      color: black;
-      margin-top: 25px;
+      margin: 0px;
     }
 
     @media (prefers-color-scheme: dark) {
@@ -46,178 +18,36 @@
       }
     }
 
-    li {
-      position: relative;
-    }
-
-    ul.root li span {
-      user-select: none;
-
-      border-style: solid;
-      border-width: 2px;
-      padding: 15px;
-      border-radius: 10px;
-    }
-
-    select {
-      height: fit-content;
-    }
-
-    select,
-    ::picker(select) {
-      appearance: base-select;
-    }
-
-    select {
-      border: solid #222 2px;
-      border-radius: 10px;
-    }
-
-    button.is-plus {
-      position: absolute;
-
-      font-size: 120%;
-      color: #0f0;
-      background-color: #3f3f3f;
-
-      display: inline-flex;
-      justify-content: center;
+    .row {
+      display: flex;
+      flex-direction: row;
       align-items: center;
-
-      border: solid #222 2px;
-
-      padding: 0px;
-      width: 1.2ch;
-      height: 1.2ch;
+      justify-content: center;
     }
 
-    .overlay {
-      position: fixed;
-      left: 0;
-      top: 0;
-      width: 100%;
-      height: 100%;
-      background-color: rgba(0, 0, 0, 0.5);
-    }
-
-    ul.ctx-menu {
-      position: absolute;
-      user-select: none;
-      display: block;
-
-      margin: 0;
-      padding: 5px;
-
-      background-color: black;
-      border-radius: 10px;
-    }
-
-    ul.ctx-menu li {
-      font-size: 70%;
-      color: #bbb;
-      transition: color 0.2s;
-    }
-
-    ul.ctx-menu li:hover {
-      color: white;
-    }
-
-    .new-input {
-      margin: 0;
-      padding: 0;
-      border: none;
-      outline: none;
-      background-color: inherit;
-      transition: width 0.2s;
-      min-width: 8ch;
-      max-width: 50ch;
-    }
-
-    .new-input:focus {
-      outline: none;
+    .col {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
     }
   </style>
 
-  <link rel='stylesheet' href='./new-color-picker.css'>
+  <script src='./Color.js'></script>
+  <script src='./ColorPicker.js'></script>
 
 </head>
 
 <body>
 
-
-
-
-
-  <div class='color-picker container flex-col center'>
-
-    <div class='color-picker flex-row' style='width: 100%;'>
-      <div class='color-picker paletteSample'></div>
-      <div class='color-picker paletteContainer'>
-        <div class='color-picker paletteBackground'></div>
-        <div class='color-picker paletteSaturation'></div>
-        <div class='color-picker paletteValue'></div>
-        <div class='color-picker dropper'></div>
-      </div>
+  <div class='row'>
+    <div class='col' style='height: 50vh;'>
+      <div id='target'></div>
     </div>
-
-    <div class='color-picker grid gap' style='margin: 20px; box-sizing: border-box;'>
-
-      <div class='color-picker g-col-12'>
-        <div class='color-picker flex-row center'>
-          <div class='color-picker hueSlider'>
-            <div class='color-picker dropper'></div>
-          </div>
-        </div>
-      </div>
-
-      <div class='color-picker g-col-12'>
-        <fieldset class='color-picker textInput center'>
-          <legend>Hex</legend>
-          <input type='text'>
-        </fieldset>
-      </div>
-
-      <div class='color-picker g-col-3'>
-        <fieldset class='color-picker textInput'>
-          <legend>RGB</legend>
-          <input type='text'>
-        </fieldset>
-      </div>
-
-      <div class='color-picker g-col-3'>
-        <fieldset class='color-picker textInput'>
-          <legend>CMYK</legend>
-          <input type='text'>
-        </fieldset>
-      </div>
-
-      <div class='color-picker g-col-3'>
-        <fieldset class='color-picker textInput'>
-          <legend>HSV</legend>
-          <input type='text'>
-        </fieldset>
-      </div>
-
-      <div class='color-picker g-col-3'>
-        <fieldset class='color-picker textInput'>
-          <legend>HSL</legend>
-          <input type='text'>
-        </fieldset>
-      </div>
-
-    </div>
-
   </div>
-
-  <br>
-  <br>
-  <br>
-  <br>
 
 </body>
 
-<script src='./script.js'></script>
-
-
+<script src='./demoScript.js'></script>
 
 </html>
