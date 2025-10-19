@@ -152,6 +152,19 @@ class Color {
   }
 
   /**
+   * Gets the corresponding color from the named CSS color.
+   * 
+   * @param {string} name named CSS color
+   * @returns {Color} the color, black if not found
+   */
+  static FromNamed(name) {
+    if (typeof name !== 'string') return new Color(0, 0, 0)
+    name = name.trim().split(/\s+/).join('').toLowerCase()
+    if (name in Color._NamedColors) return Color.FromHexString(Color._NamedColors[name])
+    return new Color(0, 0, 0)
+  }
+
+  /**
    * Clamps the value x between min and max, inclusive for both.
    * @param {number} x the number to clamp
    * @param {number} [min=0] minimum bound
