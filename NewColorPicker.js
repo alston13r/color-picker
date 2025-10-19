@@ -143,6 +143,7 @@ class ColorPicker extends EventTarget {
     this._updateFields()
 
     const _setColor = this._setColor.bind(this)
+    const callback = this._dispatchColorChange.bind(this)
 
     const hexValidator = {
       lastValid: hexInput.value,
@@ -152,6 +153,7 @@ class ColorPicker extends EventTarget {
         if (validated) {
           this.lastValid = validated.toHexString()
           _setColor(validated, 'hex')
+          callback()
         }
       },
       blur() {
@@ -167,6 +169,7 @@ class ColorPicker extends EventTarget {
         if (validated) {
           this.lastValid = validated.toRGBStringTrimmed()
           _setColor(validated, 'rgb')
+          callback()
         }
       },
       blur() {
@@ -182,6 +185,7 @@ class ColorPicker extends EventTarget {
         if (validated) {
           this.lastValid = validated.toCMYKStringTrimmed()
           _setColor(validated, 'cmyk')
+          callback()
         }
       },
       blur() {
@@ -197,6 +201,7 @@ class ColorPicker extends EventTarget {
         if (validated) {
           this.lastValid = validated.toHSVStringTrimmed(true)
           _setColor(validated, 'hsv')
+          callback()
         }
       },
       blur() {
@@ -212,6 +217,7 @@ class ColorPicker extends EventTarget {
         if (validated) {
           this.lastValid = validated.toHSLStringTrimmed(true)
           _setColor(validated, 'hsl')
+          callback()
         }
       },
       blur() {
@@ -236,7 +242,6 @@ class ColorPicker extends EventTarget {
       let movingDropper = false
       const color = this._color
       const getHue = () => this._hue
-      const callback = this._dispatchColorChange.bind(this)
 
       const setSV = (saturation, value) => {
         this._saturation = saturation
@@ -291,8 +296,6 @@ class ColorPicker extends EventTarget {
 
       const getHue = () => this._hue
       const setHue = this._setHue.bind(this)
-
-      const callback = this._dispatchColorChange.bind(this)
 
       const updateHueSlider = this._updateHueSlider.bind(this)
       const updatePalette = this._updatePalette.bind(this)
