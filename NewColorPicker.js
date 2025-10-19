@@ -21,6 +21,8 @@ class ColorPicker {
   /** @type {number} */
   _hue = this._color.hsv[0]
 
+  _hsvWrapper = this._color.getHSVWrapper()
+
   /**
    * @param {HTMLElement} targetElement 
    * @param {(color: Color) => void} onChange 
@@ -66,14 +68,15 @@ class ColorPicker {
     hueDropper.classList.add('color-picker', 'dropper')
     hueDiv.appendChild(hueDropper)
 
+    const hueSliderContainer = document.createElement('div')
+    hueSliderContainer.classList.add('color-picker', 'g-col-12')
+
     {
-      const outer = document.createElement('div')
-      outer.classList.add('color-picker', 'g-col-12')
       const inner = document.createElement('div')
       inner.classList.add('color-picker', 'flex-row', 'center')
-      outer.appendChild(inner)
+      hueSliderContainer.appendChild(inner)
       inner.appendChild(hueDiv)
-      bottomContainer.appendChild(outer)
+      bottomContainer.appendChild(hueSliderContainer)
     }
 
     /**
@@ -121,152 +124,33 @@ class ColorPicker {
     this.droppers = { paletteDropper, hueDropper }
     this.palette = {
       sample: paletteSampleDiv,
-      background: paletteContainerBackground
+      background: paletteContainerBackground,
+      container: paletteContainer
     }
-
-
-
-
+    this.hueContainer = {
+      container: hueSliderContainer,
+      slider: hueDiv
+    }
 
     // show initial color
     {
-      const hsv = this._color.hsv
-
       // initial placement of droppers
-      const paletteBounds = paletteContainer.getBoundingClientRect()
-      const paletteDropperBounds = paletteDropper.getBoundingClientRect()
-
-      paletteDropper.style.left = hsv[1] * paletteBounds.width - paletteDropperBounds.width / 2 + 'px'
-      paletteDropper.style.top = (1 - hsv[2]) * paletteBounds.height - paletteDropperBounds.height / 2 + 'px'
-
-      const hueSliderBounds = hueDiv.getBoundingClientRect()
-      const hueDropperBounds = hueDropper.getBoundingClientRect()
-
-      hueDropper.style.left = hsv[0] / 360 * hueSliderBounds.width - hueDropperBounds.width / 2 + 'px'
-      hueDropper.style.top = hueSliderBounds.height / 2 - hueDropperBounds.height / 2 + 'px'
+      this._updatePaletteDropper()
+      this._updateHueDropper()
 
       // initial display of color
-      paletteContainer.style.setProperty('--hue', hsv[0])
-      hueDropper.style.backgroundColor = `hsl(${hsv[0]}, 100%, 50%)`
-
-      const str = this._color.toRGBString()
-      paletteDropper.style.backgroundColor = str
-      paletteSampleDiv.style.backgroundColor = str
+      this._updatePalette()
+      this._updateHueSlider()
 
       // initial formats
-      {
-        // hex
-        const str = this._color.toHexString()
-        const formatted = str
-        console.log(str, '"' + formatted + '"')
-        hexInput.value = formatted
-      }
-      {
-        // rgb
-        const str = this._color.toRGBString()
-        const formatted = str.substring(str.indexOf('(') + 1, str.indexOf(')'))
-        console.log(str, '"' + formatted + '"')
-        rgbInput.value = formatted
-      }
-      {
-        // cmyk
-        const str = this._color.toCMYKString()
-        const formatted = str.substring(str.indexOf('(') + 1, str.indexOf(')'))
-        console.log(str, '"' + formatted + '"')
-        cmykInput.value = formatted
-      }
-      {
-        // hsv
-        const str = this._color.toHSVString()
-        const formatted = str.substring(str.indexOf('(') + 1, str.indexOf(')'))
-        console.log(str, '"' + formatted + '"')
-        hsvInput.value = formatted
-      }
-      {
-        // hsl
-        const str = this._color.toHSLString()
-        const formatted = str.substring(str.indexOf('(') + 1, str.indexOf(')'))
-        console.log(str, '"' + formatted + '"')
-        hslInput.value = formatted
-      }
+      this._updateHexInput()
+      this._updateRGBInput()
+      this._updateCMYKInput()
+      this._updateHSVInput()
+      this._updateHSLInput()
     }
 
 
-
-
-
-
-
-
-    // /**
-    //  * @param {number} u 
-    //  * @param {number} v 
-    //  */
-    // function setPaletteDropperPos(u, v) {
-    //   const dropperBounds = paletteDropper.getBoundingClientRect()
-    //   const paletteBounds = paletteContainer.getBoundingClientRect()
-
-    //   paletteDropper.style.left = (u * paletteBounds.width - dropperBounds.width / 2) + 'px'
-    //   paletteDropper.style.top = (v * paletteBounds.height - dropperBounds.height / 2) + 'px'
-    // }
-
-
-    // const setSaturationAndValue = (() => {
-    //   const color = new Color()
-
-    //   /**
-    //    * @param {number} saturation 0 <= saturation <= 1
-    //    * @param {number} value 0 <= value <= 1
-    //    */
-    //   return (saturation, value) => {
-    //     color.hsv = [this._hue, saturation, value]
-
-    //     const str = color.toRGBString()
-    //     paletteDropper.style.backgroundColor = str
-    //     hueDropper.style.backgroundColor = str
-
-    //     //   this.lastSV[0] = saturation
-    //     //   this.lastSV[1] = value
-    //   }
-    // })()
-
-
-    // /**
-    //  * @param {number} t 0 <= t <= 1
-    //  */
-    // function setHueDropperPos(t) {
-    //   const dropperBounds = hueDropper.getBoundingClientRect()
-    //   const sliderBounds = hueDiv.getBoundingClientRect()
-    //   hueDropper.style.left = (t * sliderBounds.width - dropperBounds.width / 2) + 'px'
-    //   hueDropper.style.top = (sliderBounds.height / 2 - dropperBounds.height / 2) + 'px'
-    // }
-
-
-
-
-    // [-] initial color
-    //   [x] palette
-    //     [x] dropper
-    //     [x] background
-    //     [x] sample
-    //   [x] hue dropper
-    //   [ ] text inputs
-
-    // [ ] text inputs
-    //   [ ] validate input
-    //   [ ] update color
-    //   [ ] update other inputs
-    //   [ ] update hue slider
-    //   [ ] update palette
-
-    // [-] hue slider
-    //   [x] update color
-    //   [x] update palette
-    //   [ ] update inputs
-
-    // [-] paletter dropper
-    //   [x] update color
-    //   [ ] update inputs
 
 
 
@@ -320,6 +204,9 @@ class ColorPicker {
       const getHue = () => this._hue
       const callback = this.colorChangeCallback
 
+      const updatePalette = this._updatePalette.bind(this)
+      const updateDropper = this._updatePaletteDropper.bind(this)
+
       /**
        * @param {MouseEvent} e 
        */
@@ -330,19 +217,10 @@ class ColorPicker {
 
         const u = ox / paletteBounds.width
         const v = oy / paletteBounds.height
-
-        const dropperBounds = paletteDropper.getBoundingClientRect()
-        const dropperWidth = dropperBounds.width
-        const dropperHeight = dropperBounds.height
-
-        paletteDropper.style.left = ox - dropperWidth / 2 + 'px'
-        paletteDropper.style.top = oy - dropperHeight / 2 + 'px'
-
         color.hsv = [getHue(), u, 1 - v]
 
-        const str = color.toRGBString()
-        paletteDropper.style.backgroundColor = str
-        paletteSampleDiv.style.backgroundColor = str
+        updatePalette()
+        updateDropper()
 
         callback(color)
 
@@ -370,110 +248,46 @@ class ColorPicker {
       const color = this._color
 
       const getHue = () => this._hue
-      const setHue = hue => this._hue = hue
+      const setHue = this._setHue.bind(this)
 
       const callback = this.colorChangeCallback
 
-      /**
-       * @param {MouseEvent} e 
-       */
-      function updatePosMouse(e) {
-        const bounds = hueDiv.getBoundingClientRect()
-        const ox = ColorPicker._clamp(e.clientX - bounds.x, 0, bounds.width)
-
-        hueDropper.style.left = ox + 'px'
-
-        const t = ox / bounds.width
-        const hue = t * 360
-        setHue(hue)
-
-
-
-
-
-
-        paletteContainer.style.setProperty('--hue', hue)
-
-        const hsv = color.hsv
-        hsv[0] = hue
-        color.hsv = hsv
-
-        const str = color.toRGBString()
-        paletteDropper.style.backgroundColor = str
-        paletteSampleDiv.style.backgroundColor = str
-
-        const dropperBounds = hueDropper.getBoundingClientRect()
-        const dropperWidth = dropperBounds.width
-        const dropperHeight = dropperBounds.height
-        hueDropper.style.left = ox - dropperWidth / 2 + 'px'
-        hueDropper.style.top = bounds.height / 2 - dropperHeight / 2 + 'px'
-
-        hueDropper.style.backgroundColor = `hsl(${hue}, 100%, 50%)`
-
-        callback(color)
-      }
-
-      /**
-       * @param {WheelEvent} e 
-       */
-      function updatePosWheel(e) {
-        if (e.deltaY === 0) return
-
-        const scrollDir = Math.sign(e.deltaY)
-
-        const currHue = getHue()
-        if (currHue === 0 && scrollDir < 0) return
-        if (currHue === 360 && scrollDir > 0) return
-
-        const newHue = ColorPicker._clamp(currHue + scrollDir, 0, 360)
-        setHue(newHue)
-
-
-
-
-        const bounds = hueDiv.getBoundingClientRect()
-        const ox = newHue / 360 * bounds.width
-
-
-
-
-
-
-
-        paletteContainer.style.setProperty('--hue', newHue)
-
-        const hsv = color.hsv
-        hsv[0] = newHue
-        color.hsv = hsv
-
-        const str = color.toRGBString()
-        paletteDropper.style.backgroundColor = str
-        paletteSampleDiv.style.backgroundColor = str
-
-        const dropperBounds = hueDropper.getBoundingClientRect()
-        const dropperWidth = dropperBounds.width
-        const dropperHeight = dropperBounds.height
-        hueDropper.style.left = ox - dropperWidth / 2 + 'px'
-        hueDropper.style.top = bounds.height / 2 - dropperHeight / 2 + 'px'
-
-        hueDropper.style.backgroundColor = `hsl(${newHue}, 100%, 50%)`
-
-
-
-
-
-        callback(color)
-      }
+      const updateHueSlider = this._updateHueSlider.bind(this)
+      const updatePalette = this._updatePalette.bind(this)
+      const updateDropper = this._updateHueDropper.bind(this)
 
       /**
        * @param {MouseEvent | WheelEvent} e 
        */
       function updatePos(e) {
-        if (e instanceof WheelEvent) updatePosWheel(e)
-        else if (e instanceof MouseEvent) updatePosMouse(e)
+        let newHue = getHue()
+
+        if (e instanceof WheelEvent) {
+          if (e.deltaY === 0) return
+
+          const scrollDir = Math.sign(e.deltaY)
+
+          if (newHue === 0 && scrollDir < 0) return
+          if (newHue === 360 && scrollDir > 0) return
+
+          newHue = ColorPicker._clamp(newHue + scrollDir, 0, 360)
+        }
+
+        else if (e instanceof MouseEvent) {
+          const bounds = hueDiv.getBoundingClientRect()
+          const ox = ColorPicker._clamp(e.clientX - bounds.x, 0, bounds.width)
+
+          const t = ox / bounds.width
+          newHue = t * 360
+        }
+
         else return
 
-
+        setHue(newHue)
+        updatePalette()
+        updateHueSlider()
+        updateDropper()
+        callback(color)
 
         // update text fields
       }
@@ -504,22 +318,16 @@ class ColorPicker {
       window.addEventListener('mousemove', e => {
         if (movingDropper) updatePos(e)
       })
-      hueDiv.addEventListener('wheel', e => {
+      hueSliderContainer.addEventListener('wheel', e => {
         e.preventDefault()
         updatePos(e)
       })
     }
   }
 
-  // /**
-  //  * @param {Color} color 
-  //  * @param {'hex' | 'rgb' | 'cmyk' | 'hsv' | 'hsl' | ''} [skipUpdate='']
-  //  */
-  // _setColor(color, skipUpdate = '') {
-
-  // }
-
   /**
+   * Gets the current color.
+   * 
    * @returns {Color}
    */
   getColor() {
@@ -527,6 +335,8 @@ class ColorPicker {
   }
 
   /**
+   * Sets the current color.
+   * 
    * @param {Color} color 
    */
   setColor(color) {
@@ -534,21 +344,105 @@ class ColorPicker {
     this._color.copy(color)
   }
 
+  /**
+   * Sets the current hue.
+   * 
+   * @param {number} hue 0 <= hue <= 360
+   */
+  _setHue(hue) {
+    this._hue = ColorPicker._clamp(hue, 0, 360)
+    this._hsvWrapper.h = this._hue
+  }
 
+  /**
+   * Updates the palette's sample div, gradient div, and dropper to match
+   * that of the current color.
+   */
+  _updatePalette() {
+    const str = this._color.toRGBString()
+    this.droppers.paletteDropper.style.backgroundColor = str
+    this.palette.sample.style.backgroundColor = str
+    this.palette.container.style.setProperty('--hue', this._hue)
+  }
 
-  // /**
-  //  * @param {number} hue 0 <= hue < 360
-  //  */
-  // setHue(hue) {
-  //   if (typeof hue !== 'number') return
-  //   this._hue = Math.round(hue) % 360
+  /**
+   * Updates the position of the palette dropper to match that of the current color.
+   */
+  _updatePaletteDropper() {
+    const hsv = this._color.hsv
 
-  //   const hsl = this._color.hsl
-  //   hsl[0] = this._hue
-  //   this._color.hsl = hsl
+    const container = this.palette.container
+    const dropper = this.droppers.paletteDropper
 
-  //   const str = this._color.toRGBString()
-  //   this.palette.sample.style.backgroundColor = str
-  //   this.palette.background.style.backgroundColor = str
-  // }
+    const paletteBounds = container.getBoundingClientRect()
+    const paletteDropperBounds = dropper.getBoundingClientRect()
+
+    dropper.style.left = hsv[1] * paletteBounds.width - paletteDropperBounds.width / 2 + 'px'
+    dropper.style.top = (1 - hsv[2]) * paletteBounds.height - paletteDropperBounds.height / 2 + 'px'
+  }
+
+  /**
+   * Updates the hue slider's dropper to match that of the current color.
+   */
+  _updateHueSlider() {
+    this.droppers.hueDropper.style.backgroundColor = `hsl(${this._hue}, 100%, 50%)`
+  }
+
+  /**
+   * Updates the position of the hue dropper to match that of the current color.
+   */
+  _updateHueDropper() {
+    const slider = this.hueContainer.slider
+    const dropper = this.droppers.hueDropper
+
+    const hueSliderBounds = slider.getBoundingClientRect()
+    const hueDropperBounds = dropper.getBoundingClientRect()
+
+    dropper.style.left = this._hue / 360 * hueSliderBounds.width - hueDropperBounds.width / 2 + 'px'
+    dropper.style.top = hueSliderBounds.height / 2 - hueDropperBounds.height / 2 + 'px'
+  }
+
+  /**
+   * Updates the hex input to match that of the current color.
+   */
+  _updateHexInput() {
+    const str = this._color.toHexString()
+    this.inputs.hexInput.value = str
+  }
+
+  /**
+   * Updates the rgb input to match that of the current color.
+   */
+  _updateRGBInput() {
+    const str = this._color.toRGBString()
+    const formatted = str.substring(str.indexOf('(') + 1, str.indexOf(')'))
+    this.inputs.rgbInput.value = formatted
+  }
+
+  /**
+   * Updates the cmyk input to match that of the current color.
+   */
+  _updateCMYKInput() {
+    const str = this._color.toCMYKString()
+    const formatted = str.substring(str.indexOf('(') + 1, str.indexOf(')'))
+    this.inputs.cmykInput.value = formatted
+  }
+
+  /**
+   * Updates the hsv input to match that of the current color.
+   */
+  _updateHSVInput() {
+    const str = this._color.toHSVString(true)
+    const formatted = str.substring(str.indexOf('(') + 1, str.indexOf(')'))
+    this.inputs.hsvInput.value = formatted
+  }
+
+  /**
+   * Updates the hsl input to match that of the current color.
+   */
+  _updateHSLInput() {
+    const str = this._color.toHSLString(true)
+    const formatted = str.substring(str.indexOf('(') + 1, str.indexOf(')'))
+    this.inputs.hslInput.value = formatted
+  }
 }
