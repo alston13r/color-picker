@@ -148,7 +148,6 @@
 @media (prefers-color-scheme: dark) {
   .color-picker.textInput {
     color: white;
-    /* border: 1px solid rgb(95, 95, 95); */
     border-color: var(--borderColorDark);
   }
 
@@ -160,8 +159,5 @@
   .color-picker.container {
     background-color: var(--backgroundColorDark);
     border-color: var(--borderColorDark);
-
-    /* background-color: #1f1f1f; */
-    /* border: 1px solid rgb(95, 95, 95); */
   }
 }
