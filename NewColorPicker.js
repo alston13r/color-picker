@@ -1,9 +1,7 @@
-// should have method for getting current color
-// should have method for setting color
 // should have event for color change
 
 
-class ColorPicker {
+class ColorPicker extends EventTarget {
   /**
    * Clamps the value x between min and max, inclusive for both.
    * @param {number} x the number to clamp
@@ -20,15 +18,16 @@ class ColorPicker {
 
   /** @type {number} */
   _hue = this._color.hsv[0]
-
-  _hsvWrapper = this._color.getHSVWrapper()
+  /** @type {number} */
+  _saturation = this._color.hsv[1]
+  /** @type {number} */
+  _value = this._color.hsv[2]
 
   /**
    * @param {HTMLElement} targetElement 
-   * @param {(color: Color) => void} onChange 
    */
-  constructor(targetElement, onChange = () => void 0) {
-    this.colorChangeCallback = onChange
+  constructor(targetElement) {
+    super()
 
     const container = document.createElement('div')
     container.classList.add('color-picker', 'container', 'flex-col', 'center')
@@ -132,102 +131,121 @@ class ColorPicker {
       slider: hueDiv
     }
 
-    /**
-     * Updates the text fields to match the current color, excluding a field if specified.
-     * 
-     * @param {'hex' | 'rgb' | 'cmyk' | 'hsv' | 'hsl'} exclude the field to exclude
-     */
-    const updateFields = (exclude = '') => {
-      if (exclude.length === 0) {
-        this._updateHexInput()
-        this._updateRGBInput()
-        this._updateCMYKInput()
-        this._updateHSVInput()
-        this._updateHSLInput()
-      } else {
-        if (exclude !== 'hex') this._updateHexInput()
-        if (exclude !== 'rgb') this._updateRGBInput()
-        if (exclude !== 'cmyk') this._updateCMYKInput()
-        if (exclude !== 'hsv') this._updateHSVInput()
-        if (exclude !== 'hsl') this._updateHSLInput()
+    // initial placement of droppers
+    this._updatePaletteDropper()
+    this._updateHueDropper()
+
+    // initial display of color
+    this._updatePalette()
+    this._updateHueSlider()
+
+    // initial formats
+    this._updateFields()
+
+    const _setColor = this._setColor.bind(this)
+
+    const hexValidator = {
+      lastValid: hexInput.value,
+      validate() {
+        let str = hexInput.value.trim()
+        const validated = Color.ValidateHexString(str)
+        if (validated) {
+          this.lastValid = validated.toHexString()
+          _setColor(validated, 'hex')
+        }
+      },
+      blur() {
+        hexInput.value = this.lastValid
       }
     }
 
-    // show initial color
-    {
-      // initial placement of droppers
-      this._updatePaletteDropper()
-      this._updateHueDropper()
-
-      // initial display of color
-      this._updatePalette()
-      this._updateHueSlider()
-
-      // initial formats
-      updateFields()
-      // this._updateHexInput()
-      // this._updateRGBInput()
-      // this._updateCMYKInput()
-      // this._updateHSVInput()
-      // this._updateHSLInput()
+    const rgbValidator = {
+      lastValid: rgbInput.value,
+      validate() {
+        let str = rgbInput.value.trim()
+        const validated = Color.ValidateRGBString(str)
+        if (validated) {
+          this.lastValid = validated.toRGBStringTrimmed()
+          _setColor(validated, 'rgb')
+        }
+      },
+      blur() {
+        rgbInput.value = this.lastValid
+      }
     }
 
+    const cmykValidator = {
+      lastValid: cmykInput.value,
+      validate() {
+        let str = cmykInput.value.trim()
+        const validated = Color.ValidateCMYKString(str)
+        if (validated) {
+          this.lastValid = validated.toCMYKStringTrimmed()
+          _setColor(validated, 'cmyk')
+        }
+      },
+      blur() {
+        cmykInput.value = this.lastValid
+      }
+    }
 
+    const hsvValidator = {
+      lastValid: hsvInput.value,
+      validate() {
+        let str = hsvInput.value.trim()
+        const validated = Color.ValidateHSVString(str)
+        if (validated) {
+          this.lastValid = validated.toHSVStringTrimmed(true)
+          _setColor(validated, 'hsv')
+        }
+      },
+      blur() {
+        hsvInput.value = this.lastValid
+      }
+    }
 
+    const hslValidator = {
+      lastValid: hslInput.value,
+      validate() {
+        let str = hslInput.value.trim()
+        const validated = Color.ValidateHSLString(str)
+        if (validated) {
+          this.lastValid = validated.toHSLStringTrimmed(true)
+          _setColor(validated, 'hsl')
+        }
+      },
+      blur() {
+        hslInput.value = this.lastValid
+      }
+    }
 
+    hexInput.addEventListener('input', () => hexValidator.validate())
+    rgbInput.addEventListener('input', () => rgbValidator.validate())
+    cmykInput.addEventListener('input', () => cmykValidator.validate())
+    hsvInput.addEventListener('input', () => hsvValidator.validate())
+    hslInput.addEventListener('input', () => hslValidator.validate())
 
-
-
-    hexInput.addEventListener('input', e => {
-      console.log(e.target.value)
-    })
-
-    rgbInput.addEventListener('input', e => {
-      console.log(e.target.value)
-    })
-
-    cmykInput.addEventListener('input', e => {
-      console.log(e.target.value)
-    })
-
-    hsvInput.addEventListener('input', e => {
-      console.log(e.target.value)
-    })
-
-    hslInput.addEventListener('input', e => {
-      console.log(e.target.value)
-    })
-
-    // hexInput.addEventListener('blur', () => {
-
-    // })
-
-    // rgbInput.addEventListener('blur', () => {
-
-    // })
-
-    // cmykInput.addEventListener('blur', () => {
-
-    // })
-
-    // hsvInput.addEventListener('blur', () => {
-
-    // })
-
-    // hslInput.addEventListener('blur', () => {
-
-    // })
-
+    hexInput.addEventListener('blur', () => hexValidator.blur())
+    rgbInput.addEventListener('blur', () => rgbValidator.blur())
+    cmykInput.addEventListener('blur', () => cmykValidator.blur())
+    hsvInput.addEventListener('blur', () => hsvValidator.blur())
+    hslInput.addEventListener('blur', () => hslValidator.blur())
 
     // palette dropper
     {
       let movingDropper = false
       const color = this._color
       const getHue = () => this._hue
-      const callback = this.colorChangeCallback
+      const callback = this._dispatchColorChange.bind(this)
+
+      const setSV = (saturation, value) => {
+        this._saturation = saturation
+        this._value = value
+      }
 
       const updatePalette = this._updatePalette.bind(this)
       const updateDropper = this._updatePaletteDropper.bind(this)
+      const updateFields = this._updateFields.bind(this)
 
       /**
        * @param {MouseEvent} e 
@@ -240,11 +258,13 @@ class ColorPicker {
         const u = ox / paletteBounds.width
         const v = oy / paletteBounds.height
         color.hsv = [getHue(), u, 1 - v]
+        setSV(u, 1 - v)
 
         updatePalette()
         updateDropper()
 
-        callback(color)
+
+        callback()
 
         updateFields()
       }
@@ -272,11 +292,12 @@ class ColorPicker {
       const getHue = () => this._hue
       const setHue = this._setHue.bind(this)
 
-      const callback = this.colorChangeCallback
+      const callback = this._dispatchColorChange.bind(this)
 
       const updateHueSlider = this._updateHueSlider.bind(this)
       const updatePalette = this._updatePalette.bind(this)
       const updateDropper = this._updateHueDropper.bind(this)
+      const updateFields = this._updateFields.bind(this)
 
       /**
        * @param {MouseEvent | WheelEvent} e 
@@ -309,7 +330,7 @@ class ColorPicker {
         updatePalette()
         updateHueSlider()
         updateDropper()
-        callback(color)
+        callback()
 
         updateFields()
       }
@@ -357,13 +378,61 @@ class ColorPicker {
   }
 
   /**
+   * Dispatches a color change event to any event listeners.
+   */
+  _dispatchColorChange() {
+    this.dispatchEvent(new CustomEvent('colorchange', { detail: { color: this.getColor() } }))
+  }
+
+  /**
+   * Sets the current color, updating all elements of the color picker.
+   * Optional exclude will ignore that text field, used when updating from
+   * user typing a color format in that text field.
+   * 
+   * @param {Color} color the color to set
+   * @param {'hex' | 'rgb' | 'cmyk' | 'hsv' | 'hsl'} exclude the field to exclude
+   */
+  _setColor(color, exclude = '') {
+    this._color.copy(color)
+    this._hue = this._color.hsv[0]
+    this._saturation = this._color.hsv[1]
+    this._value = this._color.hsv[2]
+    this._updateFields(exclude)
+    this._updatePaletteDropper()
+    this._updateHueDropper()
+    this._updatePalette()
+    this._updateHueSlider()
+  }
+
+  /**
    * Sets the current color.
    * 
    * @param {Color} color 
    */
   setColor(color) {
     if (!color || color._isColor !== true) return
-    this._color.copy(color)
+    this._setColor(color)
+  }
+
+  /**
+   * Updates the text fields to match the current color, excluding a field if specified.
+   * 
+   * @param {'hex' | 'rgb' | 'cmyk' | 'hsv' | 'hsl'} exclude the field to exclude
+   */
+  _updateFields(exclude = '') {
+    if (exclude.length === 0) {
+      this._updateHexInput()
+      this._updateRGBInput()
+      this._updateCMYKInput()
+      this._updateHSVInput()
+      this._updateHSLInput()
+    } else {
+      if (exclude !== 'hex') this._updateHexInput()
+      if (exclude !== 'rgb') this._updateRGBInput()
+      if (exclude !== 'cmyk') this._updateCMYKInput()
+      if (exclude !== 'hsv') this._updateHSVInput()
+      if (exclude !== 'hsl') this._updateHSLInput()
+    }
   }
 
   /**
@@ -373,7 +442,9 @@ class ColorPicker {
    */
   _setHue(hue) {
     this._hue = ColorPicker._clamp(hue, 0, 360)
-    this._hsvWrapper.h = this._hue
+    const hsv = this._color.hsv
+    hsv[0] = this._hue
+    this._color.hsv = hsv
   }
 
   /**
@@ -391,16 +462,14 @@ class ColorPicker {
    * Updates the position of the palette dropper to match that of the current color.
    */
   _updatePaletteDropper() {
-    const hsv = this._color.hsv
-
     const container = this.palette.container
     const dropper = this.droppers.paletteDropper
 
     const paletteBounds = container.getBoundingClientRect()
     const paletteDropperBounds = dropper.getBoundingClientRect()
 
-    dropper.style.left = hsv[1] * paletteBounds.width - paletteDropperBounds.width / 2 + 'px'
-    dropper.style.top = (1 - hsv[2]) * paletteBounds.height - paletteDropperBounds.height / 2 + 'px'
+    dropper.style.left = this._saturation * paletteBounds.width - paletteDropperBounds.width / 2 + 'px'
+    dropper.style.top = (1 - this._value) * paletteBounds.height - paletteDropperBounds.height / 2 + 'px'
   }
 
   /**
@@ -428,43 +497,37 @@ class ColorPicker {
    * Updates the hex input to match that of the current color.
    */
   _updateHexInput() {
-    const str = this._color.toHexString()
-    this.inputs.hexInput.value = str
+    this.inputs.hexInput.value = this._color.toHexString()
   }
 
   /**
    * Updates the rgb input to match that of the current color.
    */
   _updateRGBInput() {
-    const str = this._color.toRGBString()
-    const formatted = str.substring(str.indexOf('(') + 1, str.indexOf(')'))
-    this.inputs.rgbInput.value = formatted
+    this.inputs.rgbInput.value = this._color.toRGBStringTrimmed()
   }
 
   /**
    * Updates the cmyk input to match that of the current color.
    */
   _updateCMYKInput() {
-    const str = this._color.toCMYKString()
-    const formatted = str.substring(str.indexOf('(') + 1, str.indexOf(')'))
-    this.inputs.cmykInput.value = formatted
+    this.inputs.cmykInput.value = this._color.toCMYKStringTrimmed()
   }
 
   /**
    * Updates the hsv input to match that of the current color.
    */
   _updateHSVInput() {
-    const str = this._color.toHSVString(true)
-    const formatted = str.substring(str.indexOf('(') + 1, str.indexOf(')'))
-    this.inputs.hsvInput.value = formatted
+    const hf = Math.round(this._hue) % 360
+    const sf = Math.floor(this._saturation * 100)
+    const vf = Math.floor(this._value * 100)
+    this.inputs.hsvInput.value = `${hf}°, ${sf}%, ${vf}%`
   }
 
   /**
    * Updates the hsl input to match that of the current color.
    */
   _updateHSLInput() {
-    const str = this._color.toHSLString(true)
-    const formatted = str.substring(str.indexOf('(') + 1, str.indexOf(')'))
-    this.inputs.hslInput.value = formatted
+    this.inputs.hslInput.value = this._color.toHSLStringTrimmed(true)
   }
 }
