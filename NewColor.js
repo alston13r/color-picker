@@ -214,7 +214,7 @@ class Color {
    * @returns {Color} reference to this
    */
   copy(color) {
-    if (color.isColor === true) this.rgb = color.rgb
+    if (color._isColor === true) this.rgb = color.rgb
     return this
   }
 
@@ -536,41 +536,63 @@ class Color {
   }
 
   /**
-   * Returns rgb string format of color where values are between 0 and 255.
+   * Returns trimmed rgb string format of color where values are between 0 and 255.
    * 
-   * @returns {string} rgb(red, green, blue)
+   * @returns {string} `red, green, blue`
    */
-  toRGBString() {
+  toRGBStringTrimmed() {
     const red = Math.round(this.red * 255)
     const green = Math.round(this.green * 255)
     const blue = Math.round(this.blue * 255)
-    return `rgb(${red}, ${green}, ${blue})`
+    return `${red}, ${green}, ${blue}`
   }
 
   /**
-   * Returns a color from the rgb string format where values are between 0 and 255.
+   * Returns rgb string format of color where values are between 0 and 255.
    * 
-   * @param {string} str rgb(red, green, blue)
+   * @returns {string} `rgb(red, green, blue)`
+   */
+  toRGBString() {
+    return `rgb(${this.toRGBStringTrimmed()})`
+  }
+
+  /**
+   * Validates a string from the rgb color string format where values are between 0 and 255.
+   * 
+   * @param {string} str `rgb(red, green, blue)`
+   * @returns {Color | null} the color, null if not a valid string
+   */
+  static ValidateRGBString(str) {
+    if (typeof str !== 'string') return null
+
+    let m
+    if (m = str.match(/\s*(?:rgb)?\s*\(?\s*(\d+)\s*,\s*(\d+)\s*,\s*(\d+)\s*\)?\s*$/)) {
+      const r = Color._clamp(parseInt(m[1]) / 255)
+      const g = Color._clamp(parseInt(m[2]) / 255)
+      const b = Color._clamp(parseInt(m[3]) / 255)
+
+      return new Color(r, g, b)
+    }
+
+    return null
+  }
+
+  /**
+   * Returns a color from the rgb color string format where values are between 0 and 255.
+   * 
+   * @param {string} str `rgb(red, green, blue)`
    * @returns {Color} the color, black if not a valid string
    */
   static FromRGBString(str) {
-    if (typeof str !== 'string') return new Color(0, 0, 0)
-    let r = 0, g = 0, b = 0
-    let m
-    if (m = str.match(/\s*rgb\s*\(\s*(\d+)\s*,\s*(\d+)\s*,\s*(\d+)\s*\)\s*$/)) {
-      r = Color._clamp(parseInt(m[1]) / 255)
-      g = Color._clamp(parseInt(m[2]) / 255)
-      b = Color._clamp(parseInt(m[3]) / 255)
-    }
-    return new Color(r, g, b)
+    return Color.ValidateRGBString(str) ?? new Color(0, 0, 0)
   }
 
   /**
-   * Returns hex string format of color where values are between 0x00 and 0xFF.
+   * Returns trimmed hex string format of color where values are between 0x00 and 0xFF.
    * 
-   * @returns {string} #RRGGBB
+   * @returns {string} `RRGGBB`
    */
-  toHexString() {
+  toHexStringTrimmed() {
     /**
      * @param {string} str 
      * @returns {string}
@@ -583,19 +605,28 @@ class Color {
     const green = ensureLength(Math.round(this.green * 255).toString(16))
     const blue = ensureLength(Math.round(this.blue * 255).toString(16))
 
-    return '#' + red + green + blue
+    return red + green + blue
   }
 
   /**
-   * Returns a color from the hex string format where values are between 0x00 and 0xFF.
-   * Hashtag is optional. If there is only one hex digit for the color, the color is repeated.
-   * #DA0 is expanded to #DDAA00.
+   * Returns hex string format of color where values are between 0x00 and 0xFF.
    * 
-   * @param {string} str #RRGGBB, RRGGBB, #RGB, or RGB
-   * @returns {Color} the color, black if not a valid string
+   * @returns {string} `#RRGGBB`
    */
-  static FromHexString(str) {
-    if (typeof str !== 'string') return new Color(0, 0, 0)
+  toHexString() {
+    return '#' + this.toHexStringTrimmed()
+  }
+
+  /**
+   * Validates a string from the hex color string format where values are between 0x00 and 0xFF.
+   * Hashtag is optional. If htere is only one hex digit for a color channel, the digit is repeated.
+   * `#DA0` is expanded to `#DDAA00`.
+   * 
+   * @param {string} str `#RRGGBB`, `RRGGBB`, `#RGB`, or `RGB`
+   * @returns {Color | null} the color, null if not a valid string
+   */
+  static ValidateHexString(str) {
+    if (typeof str !== 'string') return null
 
     let r = 0, g = 0, b = 0
     let rs = '00', gs = '00', bs = '00'
@@ -606,131 +637,233 @@ class Color {
       rs = str.substring(0, 2)
       gs = str.substring(2, 4)
       bs = str.substring(4, 6)
-    } else if (str.length === 3) {
+    }
+    else if (str.length === 3) {
       rs = str[0] + str[0]
       gs = str[1] + str[1]
       bs = str[2] + str[2]
     }
+    else return null
+
 
     r = parseInt(rs, 16) / 255
     g = parseInt(gs, 16) / 255
     b = parseInt(bs, 16) / 255
 
-    if (!isFinite(r)) r = 0
-    if (!isFinite(g)) g = 0
-    if (!isFinite(b)) b = 0
+    let invalid = 0
+    if (!isFinite(r)) {
+      r = 0
+      invalid++
+    }
+    if (!isFinite(g)) {
+      g = 0
+      invalid++
+    }
+    if (!isFinite(b)) {
+      b = 0
+      invalid++
+    }
 
-    return new Color(r, g, b)
+    return invalid !== 3 ? new Color(r, g, b) : null
+  }
+
+  /**
+   * Returns a color from the hex color string format where values are between 0x00 and 0xFF.
+   * Hashtag is optional. If there is only one hex digit for a color channel, the digit is repeated.
+   * `#DA0` is expanded to `#DDAA00`.
+   * 
+   * @param {string} str `#RRGGBB`, `RRGGBB`, `#RGB`, or `RGB`
+   * @returns {Color} the color, black if not a valid string
+   */
+  static FromHexString(str) {
+    return Color.ValidateHexString(str) ?? new Color(0, 0, 0)
+  }
+
+  /**
+   * Returns trimmed hsv string format of color where hue is between 0 and 360,
+   * saturation and value are between 0 and 1.
+   * 
+   * @param {boolean} [includeDegrees=false] include the degrees symbol in the output, defaults to false
+   * @returns {string} `hue°, saturation%, value%`
+   */
+  toHSVStringTrimmed(includeDegrees = false) {
+    const [h, s, v] = this.hsv
+    const hf = Math.round(h) % 360
+    const sf = Math.floor(s * 100)
+    const vf = Math.floor(v * 100)
+    return `${hf}${includeDegrees ? '°' : ''}, ${sf}%, ${vf}%`
   }
 
   /**
    * Returns hsv string format of color where hue is between 0 and 360,
    * saturation and value are between 0 and 1.
    * 
-   * @param {boolean} [includeDegrees=false] include the degrees symbol in the output
-   * @returns {string} hsv(hue°, saturation%, value%)
+   * @param {boolean} [includeDegrees=false] include the degrees symbol in the output, defaults to false
+   * @returns {string} `hsv(hue°, saturation%, value%)`
    */
   toHSVString(includeDegrees = false) {
-    const [h, s, v] = this.hsv
-    const hf = Math.round(h) % 360
-    const sf = Math.floor(s * 100)
-    const vf = Math.floor(v * 100)
-    return `hsv(${hf}${includeDegrees ? '°' : ''}, ${sf}%, ${vf}%)`
+    return `hsv(${this.toHSVStringTrimmed(includeDegrees)})`
   }
 
   /**
-   * Returns a color from the hsv string format where hue is between 0 and 360,
+   * Validates a string from the hsv color string format where hue is between 0 and 360,
    * saturation and value are between 0 and 1. Degrees and percentage symbols
    * are optional.
    * 
-   * @param {string} str hsv(hue°, saturation%, value%)
+   * @param {string} str `hsv(hue°, saturation%, value%)`
+   * @returns {Color | null} the color, null if not a valid string
+   */
+  static ValidateHSVString(str) {
+    if (typeof str !== 'string') return null
+
+    let m
+    if (m = str.match(/\s*(?:hsv)?\s*\(?\s*(\d+)°?\s*,\s*(\d+)%?\s*,\s*(\d+)%?\s*\)?\s*$/)) {
+      const h = parseInt(m[1]) % 360
+      const s = parseInt(m[2]) / 100
+      const v = parseInt(m[3]) / 100
+
+      const color = new Color()
+      color.hsv = [h, s, v]
+      return color
+    }
+
+    return null
+  }
+
+  /**
+   * Returns a color from the hsv color string format where hue is between 0 and 360,
+   * saturation and value are between 0 and 1. Degrees and percentage symbols
+   * are optional.
+   * 
+   * @param {string} str `hsv(hue°, saturation%, value%)`
    * @returns {Color} the color, black if not a valid string
    */
   static FromHSVString(str) {
-    if (typeof str !== 'string') return new Color(0, 0, 0)
-    let h = 0, s = 0, v = 0
-    let m
-    if (m = str.match(/\s*hsv\s*\(\s*(\d+)°?\s*,\s*(\d+)%?\s*,\s*(\d+)%?\s*\)\s*$/)) {
-      h = parseInt(m[1]) % 360
-      s = parseInt(m[2]) / 100
-      v = parseInt(m[3]) / 100
-    }
-    const color = new Color()
-    color.hsv = [h, s, v]
-    return color
+    return Color.ValidateHSVString(str) ?? new Color(0, 0, 0)
+  }
+
+  /**
+   * Returns trimmed hsl string format of color where hue is between 0 and 360,
+   * saturation and light are between 0 and 1.
+   * 
+   * @param {boolean} [includeDegrees=false] include the degrees symbol in the output, defaults to false
+   * @returns {string} `hue°, saturation%, light%`
+   */
+  toHSLStringTrimmed(includeDegrees = false) {
+    const [h, s, l] = this.hsl
+    const hf = Math.round(h) % 360
+    const sf = Math.floor(s * 100)
+    const lf = Math.floor(l * 100)
+    return `${hf}${includeDegrees ? '°' : ''}, ${sf}%, ${lf}%`
   }
 
   /**
    * Returns hsl string format of color where hue is between 0 and 360,
    * saturation and light are between 0 and 1.
    * 
-   * @param {boolean} [includeDegrees=false] include the degrees symbol in the output
-   * @returns {string} hsv(hue°, saturation%, light%)
+   * @param {boolean} [includeDegrees=false] include the degrees symbol in the output, defaults to false
+   * @returns {string} `hsl(hue°, saturation%, light%)`
    */
   toHSLString(includeDegrees = false) {
-    const [h, s, l] = this.hsl
-    const hf = Math.round(h) % 360
-    const sf = Math.floor(s * 100)
-    const lf = Math.floor(l * 100)
-    return `hsl(${hf}${includeDegrees ? '°' : ''}, ${sf}%, ${lf}%)`
+    return `hsl(${this.toHSLStringTrimmed(includeDegrees)})`
   }
 
   /**
-   * Returns a color from the hsl string format where hue is between 0 and 360,
+   * Validates a string from the hsl color string format where hue is between 0 and 360,
    * saturation and light are between 0 and 1. Degrees and percentage symbols
    * are optional.
    * 
-   * @param {string} str hsl(hue°, saturation%, light%)
+   * @param {string} str `hsl(hue°, saturation%, light%)`
+   * @returns {Color | null} the color, null if not a valid string
+   */
+  static ValidateHSLString(str) {
+    if (typeof str !== 'string') return null
+
+    let m
+    if (m = str.match(/\s*(?:hsl)?\s*\(?\s*(\d+)°?\s*,\s*(\d+)%\s*,\s*(\d+)%\s*\)?\s*$/)) {
+      const h = parseInt(m[1]) % 360
+      const s = parseInt(m[2]) / 100
+      const l = parseInt(m[3]) / 100
+
+      const color = new Color()
+      color.hsl = [h, s, l]
+      return color
+    }
+
+    return null
+  }
+
+  /**
+   * Returns a color from the hsl color string format where hue is between 0 and 360,
+   * saturation and light are between 0 and 1. Degrees and percentage symbols
+   * are optional.
+   * 
+   * @param {string} str `hsl(hue°, saturation%, light%)`
    * @returns {Color} the color, black if not a valid string
    */
   static FromHSLString(str) {
-    if (typeof str !== 'string') return new Color(0, 0, 0)
-    let h = 0, s = 0, l = 0
-    let m
-    if (m = str.match(/\s*hsl\s*\(\s*(\d+)°?\s*,\s*(\d+)%\s*,\s*(\d+)%\s*\)\s*$/)) {
-      h = parseInt(m[1]) % 360
-      s = parseInt(m[2]) / 100
-      l = parseInt(m[3]) / 100
-    }
-    const color = new Color()
-    color.hsl = [h, s, l]
-    return color
+    return Color.ValidateHSLString(str) ?? new Color(0, 0, 0)
+  }
+
+  /**
+   * Returns trimmed cmyk string format of color where cyan, magenta, yellow,
+   * and black values are between 0 and 100.
+   * 
+   * @returns {string} `cyan%, magenta%, yellow%, black%`
+   */
+  toCMYKStringTrimmed() {
+    const [c, m, y, k] = this.cmyk
+    const cf = Math.floor(c * 100)
+    const mf = Math.floor(m * 100)
+    const yf = Math.floor(y * 100)
+    const kf = Math.floor(k * 100)
+    return `${cf}%, ${mf}%, ${yf}%, ${kf}%`
   }
 
   /**
    * Returns cmyk string format of color where cyan, magenta, yellow, and black
    * values are between 0 and 100.
    * 
-   * @returns {string} cmyk(cyan%, magenta%, yellow%, black%)
+   * @returns {string} `cmyk(cyan%, magenta%, yellow%, black%)`
    */
   toCMYKString() {
-    const [c, m, y, k] = this.cmyk
-    const cf = Math.floor(c * 100)
-    const mf = Math.floor(m * 100)
-    const yf = Math.floor(y * 100)
-    const kf = Math.floor(k * 100)
-    return `cmyk(${cf}%, ${mf}%, ${yf}%, ${kf}%)`
+    return `cmyk(${this.toCMYKStringTrimmed()})`
   }
 
   /**
-   * Returns a color from the cmyk string format where cyan, magenta, yellow, and black
-   * values are between 0 and 100.
+   * Validates a string from the cmyk color string format where cyan, magenta,
+   * yellow, and black values are between 0 and 100.
    * 
-   * @param {string} str cmyk(cyan%, magenta%, yellow%, black%)
+   * @param {string} str `cmyk(cyan%, magenta%, yellow%, black%)`
+   * @returns {Color} the color, black if not a valid string
+   */
+  static ValidateCMYKString(str) {
+    if (typeof str !== 'string') return null
+
+    let m
+    if (m = str.match(/\s*cmyk\s*\(\s*(\d+)%?\s*,\s*(\d+)%?\s*,\s*(\d+)%?\s*,\s*(\d+)%?\s*\)\s*$/)) {
+      const cyan = parseInt(m[1]) / 100
+      const magenta = parseInt(m[2]) / 100
+      const yellow = parseInt(m[3]) / 100
+      const black = parseInt(m[4]) / 100
+
+      const color = new Color()
+      color.cmyk = [cyan, magenta, yellow, black]
+      return color
+    }
+
+    return null
+  }
+
+  /**
+   * Returns a color from the cmyk color string format where cyan, magenta,
+   * yellow, and black values are between 0 and 100.
+   * 
+   * @param {string} str `cmyk(cyan%, magenta%, yellow%, black%)`
    * @returns {Color} the color, black if not a valid string
    */
   static FromCMYKString(str) {
-    let cyan = 0, magenta = 0, yellow = 0, black = 0
-    let m
-    if (m = str.match(/\s*cmyk\s*\(\s*(\d+)%?\s*,\s*(\d+)%?\s*,\s*(\d+)%?\s*,\s*(\d+)%?\s*\)\s*$/)) {
-      cyan = parseInt(m[1]) / 100
-      magenta = parseInt(m[2]) / 100
-      yellow = parseInt(m[3]) / 100
-      black = parseInt(m[4]) / 100
-    }
-    const color = new Color()
-    color.cmyk = [cyan, magenta, yellow, black]
-    return color
+    return Color.ValidateCMYKString(str) ?? new Color(0, 0, 0)
   }
 
   /**
