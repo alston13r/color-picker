@@ -994,4 +994,17 @@ class Color {
     })
     return obj
   }
+
+  /**
+   * Computes the highest contrast color against this one. Useful for displaying
+   * text in black or white on a colored background. This computes the luminance
+   * of the current color and returns black if the luminance is greater than 50%
+   * and white otherwise.
+   * 
+   * @returns {Color} black or white
+   */
+  textContrast() {
+    const luminance = 0.2126 * this._red + 0.7152 * this._green + 0.0722 * this._blue
+    return luminance > 0.5 ? new Color(0, 0, 0) : new Color(1, 1, 1)
+  }
 }
